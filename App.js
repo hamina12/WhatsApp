@@ -3,11 +3,12 @@ import { StyleSheet, View } from 'react-native';
 
 import ChatsScreen from './src/screens/ChatsScreen';
 import ChatScreen from './src/screens/ChatScreen';
+import Navigation from './src/components/Navigation';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <ChatScreen/>
+      <Navigation/>
       
       <StatusBar style="auto" />
     </View>
