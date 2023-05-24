@@ -17,7 +17,9 @@ const ChatScreen = () => {
   }, [route.params.name])
 
   return (
-    //<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <KeyboardAvoidingView 
+      style={styles.bg}
+    >
       <ImageBackground source={bg} style={styles.bg}>
         <FlatList 
           data = {messages}
@@ -27,7 +29,7 @@ const ChatScreen = () => {
         />
         <InputBox />
     </ImageBackground>
-    //</KeyboardAvoidingView>
+    </KeyboardAvoidingView>
   )
 }
 
