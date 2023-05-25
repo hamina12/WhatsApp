@@ -4,10 +4,10 @@ import React from 'react'
 const NotImplementedScreen = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>NotImplementedScreen</Text>
+      <Text style={styles.text}>Not Implemented Screen</Text>
       <Image 
         source={{
-            uri: 'https://scontent.fbkk6-2.fna.fbcdn.net/v/t39.30808-1/290952507_111475644944798_8696868478711896663_n.jpg?stp=dst-jpg_p320x320&_nc_cat=107&ccb=1-7&_nc_sid=c6021c&_nc_eui2=AeH35KDLAeKMmW8diAIsK-CPKyvczTyylFMrK9zNPLKUUwSBXOpxG6Ep96qDMssBFMA&_nc_ohc=a7hsIrz40V4AX8qBb1w&_nc_ht=scontent.fbkk6-2.fna&oh=00_AfDC3a5BXtcQMqEQYSSzjRGxPa6x_1v5WyeP7fZTmmo5zQ&oe=64730FF1'
+            uri: 'https://scontent.fbkk6-2.fna.fbcdn.net/v/t1.6435-9/65128833_2421289494821629_294122577360584704_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=9267fe&_nc_eui2=AeG6eXbt5IuWa5cQsCA5DJG6rrm2HYwZ7-yuubYdjBnv7HFyZ6ZaosCw-phFEnZBd1k&_nc_ohc=ja35uJzjlXMAX_SdKcm&_nc_ht=scontent.fbkk6-2.fna&oh=00_AfAD7uAQGZ2miURon5KbLxnmrPPf3XGSKVl6_bduptuxEQ&oe=649654CE'
         }}
         style={styles.image}
         resizeMode='contain'
@@ -30,7 +30,9 @@ const styles = StyleSheet.create({
         color: 'gray',
     },
     image: {
-        width: '80%',
+        maxWidth: 200,
+        height:200,
         aspectRatio: 2/1,
+        borderRadius: 100,
     },
 })

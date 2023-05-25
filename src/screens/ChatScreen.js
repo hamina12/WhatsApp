@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { StyleSheet, FlatList, ImageBackground, KeyboardAvoidingView } from 'react-native'
+import { StyleSheet, FlatList, ImageBackground, KeyboardAvoidingView, Platform } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import Message from '../components/Message'
 import bg from '../../assets/images/BG.png'
@@ -17,7 +17,9 @@ const ChatScreen = () => {
   }, [route.params.name])
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : ''} 
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
       style={styles.bg}
     >
       <ImageBackground source={bg} style={styles.bg}>
