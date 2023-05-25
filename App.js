@@ -1,9 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 
+import { Amplify } from 'aws-amplify';
+import awsconfig from "./src/aws-exports";
+import { withAuthenticator } from 'aws-amplify-react-native';
+
 import Navigation from './src/components/Navigation';
 
-export default function App() {
+Amplify.configure({...awsconfig, Analytics: {disabled:true}})
+
+function App() {
   return (
     <View style={styles.container}>
       <Navigation/>
@@ -21,3 +27,5 @@ const styles = StyleSheet.create({
 
   },
 });
+
+export default withAuthenticator(App);
