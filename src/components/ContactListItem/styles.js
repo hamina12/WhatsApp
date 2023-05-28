@@ -26,6 +26,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 
+    subTitle: {
+        color: 'gray',
+    }
+
 })
 
 export default styles
