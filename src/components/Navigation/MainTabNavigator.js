@@ -3,7 +3,7 @@ import { Ionicons, Entypo } from '@expo/vector-icons'
 
 import NotImplementedScreen from "../../screens/NotImplementedScreen"
 import SettingScreen from "../../screens/SettingScreen"
-import ChatsScreen from "../../screens/ChatsScreen"
+import ChatsScreen from '../../screens/ChatsScreen/ChatsScreen'
 
 const Tab = createBottomTabNavigator()
 
