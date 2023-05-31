@@ -26,7 +26,6 @@ function App() {
       )
       // if there is no users in db, create one
       if (userData.data.getUser) {
-        console.log("User already exists")
         return
       }
       const newUser = {

@@ -18,7 +18,14 @@ const ChatsScreen = () => {
                 graphqlOperation(listChatRooms, { id : authUser.attributes.sub })
             )
 
-            setChatRooms(response.data.getUser.ChatRooms.items)
+            const rooms = response?.data?.getUser?.ChatRooms?.items || []
+            
+            const sortedRooms = rooms.sort(
+                (room1, room2) => 
+                new Date(room2.chatRoom.updatedAt) - new Date(room1.chatRoom.updatedAt)
+            )
+
+            setChatRooms(sortedRooms)
         }
 
         fetchChatRooms();
