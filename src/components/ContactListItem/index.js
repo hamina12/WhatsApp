@@ -9,7 +9,7 @@ dayjs.extend(relativeTime);
 
 const ContactListItem = ({ 
     user, onPress = () => {}, 
-    selectedable = true, 
+    selectable = false,
     isSelected = false 
 }) => {
     const navigation = useNavigation()
@@ -30,7 +30,7 @@ const ContactListItem = ({
                     {user.status}
                 </Text>
             </View>
-            { selectedable && (
+            { selectable && (
                 isSelected ? (
                     <AntDesign name="checkcircle" size={24} color="royalblue" />
                 ) : (
