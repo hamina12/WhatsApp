@@ -1,6 +1,6 @@
 import { API, graphqlOperation, Auth } from 'aws-amplify'
 
-export default getCommonChatRoomWithUser = async (userId) => {
+export default getCommonChatRoomWithUser = async (userID) => {
 
     const authUser = await Auth.currentAuthenticatedUser()
     // get all chatrooms of user1
@@ -11,8 +11,11 @@ export default getCommonChatRoomWithUser = async (userId) => {
     const chatRooms = response.data?.getUser?.ChatRooms.items || []
 
     const chatRoom = chatRooms.find((chatRoomItem) => {
-        return chatRoomItem.chatRoom.users.items.some(
-            (userItem) => userItem.user.id === userId
+        return (
+            chatRoomItem.chatRoom.users.items.length === 2 &&
+            chatRoomItem.chatRoom.users.items.some(
+                (userItem) => userItem.user.id === userID
+            )
         )
     })
 
