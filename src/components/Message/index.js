@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable } from 'react-native'
+import { View, Text, Image, Pressable, useWindowDimensions } from 'react-native'
 import { useEffect, useState } from 'react'
 import { S3Image } from 'aws-amplify-react-native'
 import styles from './styles'
@@ -14,7 +14,7 @@ const Message = ({ message }) => {
   const [isMe, setIsMe] = useState(false);
   const [imageSources, setImageSources] = useState([])
   const [imageViewerVisible, setImageViewerVisible] = useState(false)
-
+  const { width } = useWindowDimensions()
   useEffect (() => {
     const isMyMessage = async () => {
       const authUser = await Auth.currentAuthenticatedUser()
@@ -28,14 +28,16 @@ const Message = ({ message }) => {
   useEffect (() => {
     const downloadImages = async () => {
       if (message.images?.length > 0) {
-        const uri = await Storage.get(message.images[0])
-        setImageSources([{ uri }])
+        const uris = await Promise.all(message.images.map(Storage.get))
+        setImageSources(uris.map((uri) => ({ uri })))
       }
     }
 
     downloadImages()
 
   }, [message.images])
+
+  const imageContainerWidth = width * 0.8 - 30
 
   return (
     <View style={[
@@ -46,19 +48,26 @@ const Message = ({ message }) => {
       }
       ]}
     >
-      { message.images?.length > 0 && (
-        <>
-          <Pressable onPress={() => setImageViewerVisible(true)}>
-            <Image source={imageSources[0]} style={styles.image} />
-          </Pressable>
-
+      { imageSources.length > 0 && (
+        <View style={[{ width: imageContainerWidth}, styles.images]}>
+          {imageSources.map(imageSource => (
+            <Pressable 
+              style={[
+                styles.imageContainer,
+                imageSources.length === 1 && { flex:1 },
+              ]} 
+              onPress={() => setImageViewerVisible(true)}
+            >
+              <Image source={imageSource} style={styles.image} />
+            </Pressable>
+          ))}
           <ImageView 
             images={imageSources} 
             imageIndex={0} 
             visible={imageViewerVisible} 
             onRequestClose={()=> setImageViewerVisible(false)}
           />
-        </>
+        </View>
       )}
 
       <Text>{message.text}</Text>

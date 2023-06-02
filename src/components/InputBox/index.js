@@ -1,4 +1,4 @@
-import { View, TextInput, Image } from 'react-native'
+import { View, TextInput, Image, FlatList } from 'react-native'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -14,7 +14,7 @@ const InputBox = ({ chatroom }) => {
 
     // State data
     const [text, setText] = useState('')
-    const [image, setImage] = useState(null)
+    const [images, setImages] = useState([])
 
     const onSend = async () => {
         const authUser = await Auth.currentAuthenticatedUser()
@@ -25,9 +25,9 @@ const InputBox = ({ chatroom }) => {
             userID: authUser.attributes.sub,
         }
 
-        if (image) {
-            newMessage.images = [await uploadFile(image)]
-            setImage(null)
+        if (images.length > 0) {
+            newMessage.images = await Promise.all(images.map(uploadFile))
+            setImages([])
         }
 
         const newMessageData = await API.graphql(
@@ -53,12 +53,16 @@ const InputBox = ({ chatroom }) => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             quality: 1,
+            allowsMultipleSelection: true,
         })
 
-        console.log(result)
-
         if (!result.canceled) {
-            setImage(result.uri)
+            if (result.assets) {
+                // user selected multible files
+                setImages(result.assets.map((assets) => assets.uri))
+            } else {
+                setImages([result.uri])
+            }
         }
     }
 
@@ -79,19 +83,28 @@ const InputBox = ({ chatroom }) => {
     
     return (
         <>
-            {image && (
+            {images.length > 0 && (
                 <View style={styles.attachmentsContainer}>
-                    <Image 
-                        source={{ uri: image }} 
-                        style={styles.selectedImage} 
-                        resizeMode='contain'
-                    />
-                    <MaterialIcons
-                        name="highlight-remove"
-                        onPress={()=> setImage(null)}
-                        size={20}
-                        color="gray"
-                        style={styles.removeSelectedImage}
+                    <FlatList 
+                        data={images}
+                        horizontal
+                        renderItem={({item}) => (
+                            <>
+                                <Image 
+                                    source={{ uri: item }} 
+                                    style={styles.selectedImage} 
+                                    resizeMode='contain'
+                                />
+                                <MaterialIcons
+                                    name="highlight-remove"
+                                    onPress={()=> 
+                                        setImages((existingImages) => existingImages.filter((img) => img !== item))}
+                                    size={20}
+                                    color="gray"
+                                    style={styles.removeSelectedImage}
+                                />
+                            </>
+                        )}
                     />
                 </View>
             )}
