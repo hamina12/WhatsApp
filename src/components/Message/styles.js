@@ -23,6 +23,13 @@ const styles = StyleSheet.create ({
         color: 'gray',
         alignSelf: 'flex-end',
     },
+    image:{
+        width: 200,
+        height: 100,
+        borderColor: 'white',
+        borderWidth: 2,
+        borderRadius: 5,
+    },
 })
 
 export default styles

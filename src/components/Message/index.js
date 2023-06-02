@@ -1,6 +1,6 @@
-import { View, Text } from 'react-native'
+import { View, Text, Image} from 'react-native'
 import { useEffect, useState } from 'react'
-
+import { S3Image } from 'aws-amplify-react-native'
 import styles from './styles'
 
 import dayjs from 'dayjs';
@@ -30,6 +30,7 @@ const Message = ({ message }) => {
       }
       ]}
     >
+      { message.images?.length > 0 && (<S3Image imgKey={message.images[0]} style={styles.image} />)}
       <Text>{message.text}</Text>
       <Text style={styles.time}>{dayjs(message.createdAt).fromNow()}</Text>
     </View>

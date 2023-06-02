@@ -27,6 +27,21 @@ const styles = StyleSheet.create({
         borderRadius:20,
         overflow:'hidden',
     },
+    attachmentsContainer:{
+        alignItems: "flex-end",
+    },
+    selectedImage: {
+        width: 100,
+        height: 200,
+        margin: 5,
+    },
+    removeSelectedImage:{
+        position: "absolute",
+        right: 10,
+        backgroundColor: "white",
+        borderRadius: 10,
+        overflow: "hidden"
+    },
 
 })
 

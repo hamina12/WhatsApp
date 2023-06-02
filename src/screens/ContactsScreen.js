@@ -18,12 +18,22 @@ const ContactsScreen = () => {
   
   const navigation = useNavigation()
   
-  useEffect(()=>{
-    API.graphql(graphqlOperation(listUsers)).then((result) =>{
-      setUsers(result.data?.listUsers?.items)
-    })
-  }, [])
-
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const authUser = await Auth.currentAuthenticatedUser();
+      API.graphql(graphqlOperation(listUsers))
+        .then((result) => {
+          // Filter out the authenticated user from the list
+          const filteredUsers = result.data?.listUsers?.items.filter(
+            (user) => user.id !== authUser.attributes.sub
+          );
+          setUsers(filteredUsers);
+        });
+    };
+  
+    fetchUsers();
+  }, []);
+  
   const createAChatRoomWithTheUser = async (user) => {
     // Check if we already have a ChatRoom with user
     const existingChatRoom = await getCommonChatRoomsWithUser(user.id)

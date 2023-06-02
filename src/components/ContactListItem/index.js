@@ -1,8 +1,6 @@
 import { Text, View, Image, Pressable } from 'react-native';
 import styles from './styles';
-import { useNavigation } from '@react-navigation/native';
 import { AntDesign,FontAwesome } from '@expo/vector-icons'
-
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTime);
@@ -12,7 +10,6 @@ const ContactListItem = ({
     selectable = false,
     isSelected = false 
 }) => {
-    const navigation = useNavigation()
 
     return (
         <Pressable onPress={onPress} style={styles.container}>

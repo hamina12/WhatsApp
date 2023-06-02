@@ -18,7 +18,7 @@ const ChatsScreen = () => {
             graphqlOperation(listChatRooms, { id : authUser.attributes.sub })
         )
 
-        const rooms = response.data.getUser.ChatRooms.items.filter(
+        const rooms = response?.data?.getUser?.ChatRooms?.items.filter(
             (item) => !item._deleted
         )
         
