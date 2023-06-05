@@ -21,7 +21,6 @@ export const listMessagesByChatRoom = /* GraphQL */ `
         text
         chatroomID
         userID
-        images
         Attachments {
           nextToken
           startedAt

@@ -1,3 +1,4 @@
+import 'react-native-get-random-values'
 import { View, TextInput, Image, FlatList } from 'react-native'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import { useState } from 'react'
@@ -7,11 +8,9 @@ import { createAttachment, createMessage, updateChatRoom } from '../../graphql/m
 import * as ImagePicker from 'expo-image-picker'
 import styles from './styles'
 
-import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid'
 
 const InputBox = ({ chatroom }) => {
-
     // State data
     const [text, setText] = useState('')
     const [files, setFiles] = useState([])
@@ -29,7 +28,7 @@ const InputBox = ({ chatroom }) => {
             graphqlOperation(createMessage, {input : newMessage})
         )
 
-        setText("");
+        setText("")
 
         // create attachments
         await Promise.all(
@@ -38,6 +37,7 @@ const InputBox = ({ chatroom }) => {
             )
         )
         setFiles([])
+
         // set the new messages as LastMessage of the ChatRoom
         await API.graphql(graphqlOperation(
             updateChatRoom, { 
@@ -51,31 +51,39 @@ const InputBox = ({ chatroom }) => {
     }
 
     const addAttachment = async (file, messageID) => {
+        const types = {
+            image:'IMAGE',
+            video:'VIDEO',
+        }
+
         const newAttachment = {
             storageKey: await uploadFile(file.uri),
-            type: "IMAGE", // TODO: VIDEO
+            type: types[file.type], // TODO: VIDEO
             width: file.width,
             height: file.height,
             duration: file.duration,
             messageID,
             chatroomID: chatroom.id,
         }
+
         console.log(newAttachment)
-        return API.graphql(graphqlOperation(createAttachment, { input: newAttachment }))
+
+        return API.graphql(
+            graphqlOperation(createAttachment, {input : newAttachment}))
     }
 
     const pickImage = async () => {
         // No permission request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
             quality: 1,
             allowsMultipleSelection: true,
         })
-
         if (!result.canceled) {
             if (result.assets) {
                 // user selected multible files
                 setFiles(result.assets)
+                
             } else {
                 setFiles([result])
             }
@@ -87,13 +95,13 @@ const InputBox = ({ chatroom }) => {
             const response = await fetch(fileUri)
             const blob = await response.blob()
             const key = `${uuidv4()}.png`
-
             await Storage.put(key, blob, {
                 contentType: 'image/png',
             })
+
             return key
         } catch (err) {
-            console.log("Error uploading file:", err)
+        console.log('Error upload file :', err);
         }
     }
     
