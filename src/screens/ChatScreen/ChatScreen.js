@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import { StyleSheet, FlatList, ImageBackground, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
-import Message from '../components/Message'
-import bg from '../../assets/images/BG.png'
+import Message from '../../components/Message'
+import bg from '../../../assets/images/BG.png'
 
-import messages from '../../assets/data/messages.json'
-import InputBox from '../components/InputBox'
+import InputBox from '../../components/InputBox'
 
 import { API, graphqlOperation, Auth } from 'aws-amplify'
-import { getChatRoom, listMessagesByChatRoom } from '../graphql/queries'
-import { onCreateMessage, onUpdateChatRoom } from '../graphql/subscriptions'
+import { getChatRoom } from '../../graphql/queries'
+import { onCreateMessage, onUpdateChatRoom } from '../../graphql/subscriptions'
+
+import { listMessagesByChatRoom } from './ChatScreenQueries'
 import { Feather } from '@expo/vector-icons'
 
 const ChatScreen = () => {

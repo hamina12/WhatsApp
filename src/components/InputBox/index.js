@@ -3,7 +3,7 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { API, graphqlOperation, Auth, Storage } from 'aws-amplify'
-import { createMessage, updateChatRoom } from '../../graphql/mutations'
+import { createAttachment, createMessage, updateChatRoom } from '../../graphql/mutations'
 import * as ImagePicker from 'expo-image-picker'
 import styles from './styles'
 
@@ -14,7 +14,7 @@ const InputBox = ({ chatroom }) => {
 
     // State data
     const [text, setText] = useState('')
-    const [images, setImages] = useState([])
+    const [files, setFiles] = useState([])
 
     const onSend = async () => {
         const authUser = await Auth.currentAuthenticatedUser()
@@ -25,17 +25,19 @@ const InputBox = ({ chatroom }) => {
             userID: authUser.attributes.sub,
         }
 
-        if (images.length > 0) {
-            newMessage.images = await Promise.all(images.map(uploadFile))
-            setImages([])
-        }
-
         const newMessageData = await API.graphql(
             graphqlOperation(createMessage, {input : newMessage})
         )
 
         setText("");
-        
+
+        // create attachments
+        await Promise.all(
+            files.map((file) => 
+                addAttachment(file, newMessageData.data.createMessage.id)
+            )
+        )
+        setFiles([])
         // set the new messages as LastMessage of the ChatRoom
         await API.graphql(graphqlOperation(
             updateChatRoom, { 
@@ -46,6 +48,20 @@ const InputBox = ({ chatroom }) => {
                 }
             })
         )
+    }
+
+    const addAttachment = async (file, messageID) => {
+        const newAttachment = {
+            storageKey: await uploadFile(file.uri),
+            type: "IMAGE", // TODO: VIDEO
+            width: file.width,
+            height: file.height,
+            duration: file.duration,
+            messageID,
+            chatroomID: chatroom.id,
+        }
+        console.log(newAttachment)
+        return API.graphql(graphqlOperation(createAttachment, { input: newAttachment }))
     }
 
     const pickImage = async () => {
@@ -59,9 +75,9 @@ const InputBox = ({ chatroom }) => {
         if (!result.canceled) {
             if (result.assets) {
                 // user selected multible files
-                setImages(result.assets.map((assets) => assets.uri))
+                setFiles(result.assets)
             } else {
-                setImages([result.uri])
+                setFiles([result])
             }
         }
     }
@@ -83,22 +99,22 @@ const InputBox = ({ chatroom }) => {
     
     return (
         <>
-            {images.length > 0 && (
+            {files.length > 0 && (
                 <View style={styles.attachmentsContainer}>
                     <FlatList 
-                        data={images}
+                        data={files}
                         horizontal
                         renderItem={({item}) => (
                             <>
                                 <Image 
-                                    source={{ uri: item }} 
+                                    source={{ uri: item.uri }} 
                                     style={styles.selectedImage} 
                                     resizeMode='contain'
                                 />
                                 <MaterialIcons
                                     name="highlight-remove"
                                     onPress={()=> 
-                                        setImages((existingImages) => existingImages.filter((img) => img !== item))}
+                                        setFiles((existingFiles) => existingFiles.filter((file) => file !== item))}
                                     size={20}
                                     color="gray"
                                     style={styles.removeSelectedImage}
