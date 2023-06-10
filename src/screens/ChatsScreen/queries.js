@@ -14,6 +14,7 @@ export const listChatRooms = /* GraphQL */ `
                             user {
                                 id
                                 name
+                                image
                             }
                         }
                     }

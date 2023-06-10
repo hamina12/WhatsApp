@@ -15,14 +15,13 @@ const ChatListItem = ({ chat }) => {
     const navigation = useNavigation()
     const [user, setUser] = useState(null)
     const [chatRoom, setChatRoom] = useState(chat)
-
     useEffect(() => {
         const fetchUser = async () => {
             const authUser = await Auth.currentAuthenticatedUser()
             const userItem = chatRoom.users.items.find(item => item.user.id !== authUser.attributes.sub)
             setUser(userItem?.user)
         }
-
+        console.log(user)
         fetchUser()
     }, [])
 
@@ -55,7 +54,6 @@ const ChatListItem = ({ chat }) => {
                     <Text numberOfLines={1} style={styles.name}>
                         {chatRoom.name || user?.name}
                     </Text>
-
                     {chatRoom.LastMessage && (<Text style={styles.subTitle}>
                         {dayjs(chatRoom.LastMessage?.createdAt).fromNow()}
                     </Text>

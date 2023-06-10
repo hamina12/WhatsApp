@@ -1,19 +1,18 @@
-import 'react-native-get-random-values'
-import { View, TextInput, Image, FlatList } from 'react-native'
+import { View, TextInput, Image, FlatList, Text } from 'react-native'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { API, graphqlOperation, Auth, Storage } from 'aws-amplify'
+import { API, graphqlOperation, Auth, Storage} from 'aws-amplify'
 import { createAttachment, createMessage, updateChatRoom } from '../../graphql/mutations'
 import * as ImagePicker from 'expo-image-picker'
 import styles from './styles'
-
-import { v4 as uuidv4 } from 'uuid'
+import { SHA1 } from 'crypto-js';
 
 const InputBox = ({ chatroom }) => {
     // State data
     const [text, setText] = useState('')
     const [files, setFiles] = useState([])
+    const [progresses, setProgresses] = useState({})
 
     const onSend = async () => {
         const authUser = await Auth.currentAuthenticatedUser()
@@ -66,8 +65,6 @@ const InputBox = ({ chatroom }) => {
             chatroomID: chatroom.id,
         }
 
-        console.log(newAttachment)
-
         return API.graphql(
             graphqlOperation(createAttachment, {input : newAttachment}))
     }
@@ -92,18 +89,25 @@ const InputBox = ({ chatroom }) => {
 
     const uploadFile = async (fileUri) => {
         try {
+            const randomNumber = Math.random().toString();
+            const key = SHA1(randomNumber) + '.png';
             const response = await fetch(fileUri)
             const blob = await response.blob()
-            const key = `${uuidv4()}.png`
+
             await Storage.put(key, blob, {
                 contentType: 'image/png',
+                progressCallback: (progress) => {
+                    console.log(`Upload: ${ progress.loaded}/${progress.total}`)
+                    setProgresses((p) => ({...p, [fileUri]: progress.loaded / progress.total}))
+                }
             })
 
             return key
-        } catch (err) {
-        console.log('Error upload file :', err);
+        } catch (error) {
+            console.log('Error generating UUID:', error);
         }
-    }
+      };
+
     
     return (
         <>
@@ -119,6 +123,18 @@ const InputBox = ({ chatroom }) => {
                                     style={styles.selectedImage} 
                                     resizeMode='contain'
                                 />
+
+                                {progresses[item.uri] && <View style={{ 
+                                    position:'absolute',
+                                    top:'50%', 
+                                    left:'50%',
+
+                                    }}>
+                                    <Text style={{color:'white'}}>
+                                        {(progresses[item.uri] * 100).toFixed(0)} %
+                                    </Text>
+                                </View>}
+
                                 <MaterialIcons
                                     name="highlight-remove"
                                     onPress={()=> 

@@ -8,7 +8,7 @@ import InputBox from '../../components/InputBox'
 
 import { API, graphqlOperation, Auth } from 'aws-amplify'
 import { getChatRoom } from '../../graphql/queries'
-import { onCreateMessage, onUpdateChatRoom } from '../../graphql/subscriptions'
+import { onCreateAttachment, onCreateMessage, onUpdateChatRoom } from '../../graphql/subscriptions'
 
 import { listMessagesByChatRoom } from './ChatScreenQueries'
 import { Feather } from '@expo/vector-icons'
@@ -63,9 +63,42 @@ const ChatScreen = () => {
     error: (err) => console.warn(err)
   })
 
-  return () => subscription.unsubscribe()
+  // Subscribe to new attachments
+  const subscriptionAttachmets = API.graphql(graphqlOperation(onCreateAttachment, {
+    filter: { chatroomID: { eq:chatroomID} }
+    })
+  ).subscribe({
+    next: ({ value }) => {
+      const newAttachment = value.data.onCreateAttachment
+      setMessages((existingMessages) => {
+        const messageToUpdate = existingMessages.find(
+          (em)=> em.id === newAttachment.messageID
+        )
+
+        if (!messageToUpdate) {
+          return existingMessages
+        }
+        if (!messageToUpdate?.Attachments.items) {
+          messageToUpdate.Attachments.items = []
+        }
+        messageToUpdate.Attachments.items.push(newAttachment)
+
+        return existingMessages.map((m) => 
+          m.id === messageToUpdate.id ? messageToUpdate : m
+        )
+      })
+    },
+    error: (err) => console.warn(err)
+  })
+
+  return () => {
+    subscription.unsubscribe()
+    subscriptionAttachmets.unsubscribe()
+  }
 
   }, [chatroomID])
+
+  
 
 
   useEffect(() => {

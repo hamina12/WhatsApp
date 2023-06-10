@@ -21,7 +21,7 @@ const ChatsScreen = () => {
         const rooms = response?.data?.getUser?.ChatRooms?.items.filter(
             (item) => !item._deleted
         )
-        
+
         const sortedRooms = rooms.sort(
             (room1, room2) => 
             new Date(room2.chatRoom.updatedAt) - new Date(room1.chatRoom.updatedAt)
@@ -31,21 +31,18 @@ const ChatsScreen = () => {
 
         setLoading(false)
     }
-
     useEffect(() => {
 
         fetchChatRooms();
     }, [])
 
-    return (
-    < FlatList 
+    return < FlatList 
         data = {chatRooms} 
         renderItem={({item}) => <ChatListItem chat={item.chatRoom} />}
         style={{ backgroundColor: 'white'}}
         refreshing={loading}
         onRefresh={fetchChatRooms}
     />
-    )
 };
 
 export default ChatsScreen
