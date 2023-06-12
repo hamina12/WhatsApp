@@ -1,13 +1,16 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { Ionicons, Entypo } from '@expo/vector-icons'
 
+
 import NotImplementedScreen from "../../screens/NotImplementedScreen"
 import SettingScreen from "../../screens/SettingScreen"
 import ChatsScreen from '../../screens/ChatsScreen/ChatsScreen'
+import CameraScreen from "../../screens/CameraScreen"
 
 const Tab = createBottomTabNavigator()
 
 const MainTabNavigator = () => {
+
   return (
     <Tab.Navigator 
         initialRouteName="Chats"
@@ -41,7 +44,7 @@ const MainTabNavigator = () => {
         />
         <Tab.Screen 
             name="Camera" 
-            component={NotImplementedScreen}
+            component={CameraScreen}
             options={{ tabBarIcon: ({color, size}) => (
                 <Ionicons 
                 name="camera-outline" 
